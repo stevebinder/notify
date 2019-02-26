@@ -12,9 +12,10 @@ module.exports = {
   devtool: env === 'production'
     ? 'none'
     : 'cheap-module-source-map',
-  entry: [
-    `${src}/index.js`,
-  ],
+  entry: {
+    index: `${src}/index.js`,
+    background: `${src}/background.js`,
+  },
   mode: env,
   module: {
     rules: [
@@ -34,7 +35,7 @@ module.exports = {
     ],
   },
   output: {
-    filename: 'bundle.js',
+    filename: '[name].js',
     path: `${__dirname}/dist`,
   },
   plugins: [
