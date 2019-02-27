@@ -13,8 +13,8 @@ module.exports = {
     ? 'none'
     : 'cheap-module-source-map',
   entry: {
-    index: `${src}/index.js`,
-    background: `${src}/background.js`,
+    background: `${src}/background/index.js`,
+    popup: `${src}/popup/index.js`,
   },
   mode: env,
   module: {
@@ -41,7 +41,7 @@ module.exports = {
   plugins: [
     new CopyPlugin([
       `${src}/icon.png`,
-      `${src}/index.html`,
+      `${src}/popup.html`,
       `${src}/manifest.json`,
     ]),
   ],
