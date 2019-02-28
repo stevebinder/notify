@@ -22,8 +22,9 @@ const onStorage = ({ token }) => {
 };
 
 const setBadge = count => {
-  const color = count ? '#ff0000' : '';
-  const text = `${count}`;
+  const color = inc ? '#ff0000' : '';
+  const current = +chrome.browserAction.getBadgeText() || 0;
+  const text = `${current + count}`;
   chrome.browserAction.setBadgeText({ text });
   chrome.browserAction.setBadgeBackgroundColor({ color });
 }

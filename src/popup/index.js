@@ -1,13 +1,14 @@
+import React from 'react';
 import { app } from 'reactdux';
-import Component from './components';
+import App from './components';
+import Store from './Store';
 
-try {
-  chrome.browserAction.setBadgeText({ text: '' });
-} catch (e) {}
+chrome.browserAction.setBadgeText({ text: '' });
 
-const state = {
-  notifications: [],
-  token: '',
-};
+const Root = () => (
+  <Store.Provider>
+    <App />
+  </Store.Provider>
+);
 
-export default app(Component, state);
+app(Root);

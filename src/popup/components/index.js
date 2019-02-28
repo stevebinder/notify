@@ -1,29 +1,23 @@
-import React from 'react';
-import { component } from 'reactdux';
-import {
-  getNotifications,
-  launchAuthFlow,
-  syncStorage,
-} from 'src/popup/actions';
-import Notification from './Notification';
+import React, { useContext } from 'react';
+import { useIsMounted } from '../effects';
+import Store from 'src/popup/Store';
+import Base from './Base';
+import Welcome from './Welcome';
 
-export default component({
-  connect: (props, state) => ({
-    notifications: state.notifications,
-    token: state.token,
-  }),
-  mount() {
-    syncStorage();
-  },
-  render({ notifications, token }) {
-    if (!token) {
-      return <button onClick={launchAuthFlow}>Auth!</button>;
-    }
-    return notifications.map(notification => (
-      <Notification
-        key={notification.id}
-        notification={notification}
-      />
-    ));
-  },
-});
+const style = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+};
+
+export default () => {
+  const { syncStorage, token } = useContext(Store.Context);
+  useIsMounted(syncStorage);
+  return (
+    <div style={style}>
+      {token ? <Base /> : <Welcome />}
+    </div>
+  );
+};
