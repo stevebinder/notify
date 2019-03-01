@@ -1,14 +1,14 @@
 import React from 'react';
-import { app } from 'reactdux';
+import { render } from 'react-dom';
 import App from './components';
-import Store from './Store';
+import { Provider } from './Store';
 
 chrome.browserAction.setBadgeText({ text: '' });
 
 const Root = () => (
-  <Store.Provider>
+  <Provider>
     <App />
-  </Store.Provider>
+  </Provider>
 );
 
-app(Root);
+render(<Root />, document.getElementById('root'));

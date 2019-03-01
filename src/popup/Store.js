@@ -1,45 +1,48 @@
-import { context } from 'reactdux';
+import React, { createContext, useState } from 'react';
 import * as github from 'src/utils/api';
 import launchGithubAuthFlow from 'src/utils/auth';
 import { getLocalStorage } from 'src/utils/storage';
 
-export default context(
-  {
+export const Context = createContext();
+
+export const Provider = props => {
+  const [state, setState] = useState({
+    filters: ['drive-web', 'iris', 'gaia'],
     notifications: [],
     token: '',
-  },
-  (state, setState, afterState) => {
-
-    const clearToken = () => setState({ token: '' });
-
-    const getNotifications = async () => {
-      github.setToken(state.token);
-      const notifications = await github.getNotifications();
-      setState({ notifications });
-    };
-
-    const launchAuth = async () => {
-      const token = await launchGithubAuthFlow();
+  });
+  const actions = {
+    launchAuth: async () => {
+      let token = '';
+      try {
+        token = await launchGithubAuthFlow();
+      } catch (e) {}
+      if (!token) {
+        return;
+      }
       chrome.storage.local.set({ token });
-      setState({ token });
-      if (token) {
-        afterState(getNotifications);
-      }
-    };
-
-    const syncStorage = async () => {
+      github.setToken(token);
+      const notifications = await github.getNotifications();
+      setState({ ...state, notifications, token });
+    },
+    syncStorage: async () => {
       const { notifications = [], token = '' } = await getLocalStorage();
-      setState({ notifications, token });
       if (token) {
-        afterState(getNotifications);
+        github.setToken(token);
+        const newNotifications = await github.getNotifications();
+        setState({
+          ...state,
+          notifications: newNotifications,
+          token,
+        });
+      } else {
+        setState({
+          ...state,
+          notifications,
+          token,
+        });
       }
-    };
-
-    return {
-      clearToken,
-      getNotifications,
-      launchAuth,
-      syncStorage,
-    }
-  },
-);
+    },
+  };
+  return <Context.Provider {...props} value={{ ...state, ...actions }} />;
+};

@@ -50,5 +50,8 @@ export default async () => {
   const response = await getAuthResponse();
   const code = await extractCodeFromAuthResponse(response);
   const token = await exchangeCodeForToken(code);
+  if (!token) {
+    throw new Error('no token returned');
+  }
   return token;
 };

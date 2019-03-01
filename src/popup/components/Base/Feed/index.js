@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import Store from 'src/popup/Store';
+import { Context } from 'src/popup/Store';
 import Notification from './Notification';
 
 const styles = {
@@ -13,7 +13,7 @@ const styles = {
 };
 
 export default () => {
-  const { notifications } = useContext(Store.Context);
+  const { notifications } = useContext(Context);
   return (
     <div style={styles.container}>
       {notifications.map(notification => (

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import Store from 'src/popup/Store';
+import { Context } from 'src/popup/Store';
 
 const styles = {
   container: {
@@ -13,11 +13,10 @@ const styles = {
 };
 
 export default () => {
-  const { notifications } = useContext(Store.Context);
-  const repoFilters = ['drive-web', 'iris', 'gaia'];
+  const { filters } = useContext(Context);
   return (
     <div style={styles.container}>
-      {repoFilters.map(name => (
+      {filters.map(name => (
         <div key={name}>{name}</div>
       ))}
     </div>

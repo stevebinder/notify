@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { useIsMounted } from '../effects';
-import Store from 'src/popup/Store';
+import { Context } from 'src/popup/Store';
 import Base from './Base';
 import Welcome from './Welcome';
 
@@ -13,7 +13,7 @@ const style = {
 };
 
 export default () => {
-  const { syncStorage, token } = useContext(Store.Context);
+  const { launchAuth, notifications, syncStorage, token } = useContext(Context);
   useIsMounted(syncStorage);
   return (
     <div style={style}>
