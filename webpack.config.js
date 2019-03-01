@@ -1,22 +1,17 @@
 const CopyPlugin = require('copy-webpack-plugin');
 const Webpack = require('webpack');
 
-const env = process.env.NODE_ENV || 'development';
-const src = `${__dirname}/src`;
-
 module.exports = {
-  devServer: {
-    hot: false,
-    inline: false,
-  },
-  devtool: env === 'production'
-    ? 'none'
-    : 'cheap-module-source-map',
+  devtool: process.env.NODE_ENV === 'development'
+    ? 'cheap-module-source-map'
+    : 'none',
   entry: {
-    background: `${src}/background/index.js`,
-    popup: `${src}/popup/index.js`,
+    background: `${__dirname}/src/background/index.js`,
+    popup: `${__dirname}/src/popup/index.js`,
   },
-  mode: env,
+  mode: process.env.NODE_ENV === 'development'
+    ? 'development'
+    : 'production',
   module: {
     rules: [
       {
@@ -40,14 +35,14 @@ module.exports = {
   },
   plugins: [
     new CopyPlugin([
-      `${src}/icon.png`,
-      `${src}/popup.html`,
-      `${src}/manifest.json`,
+      `${__dirname}/src/icon.png`,
+      `${__dirname}/src/popup.html`,
+      `${__dirname}/src/manifest.json`,
     ]),
   ],
   resolve: {
     alias: {
-      src: src,
+      src: `${__dirname}/src`,
     },
     extensions: [
       '.css',
@@ -60,8 +55,8 @@ module.exports = {
       '.svg',
     ],
     modules: [
-      src,
-      'node_modules'
+      `${__dirname}/src`,
+      'node_modules',
     ],
   },
 };
