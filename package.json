@@ -18,7 +18,7 @@
   "scripts": {
     "build": "npm run clean && npm ci && NODE_ENV=production webpack",
     "clean": "rm -rf ./dist",
-    "dev": "npm run clean && NODE_ENV=development concurrently --kill-others \"webpack -w\" \"webpack-dev-server\"",
+    "dev": "npm run clean && NODE_ENV=development webpack -w",
     "lint": "eslint src --ext js"
   }
 }

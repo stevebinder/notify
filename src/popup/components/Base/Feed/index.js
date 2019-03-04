@@ -12,11 +12,27 @@ const styles = {
   },
 };
 
+const getFilteredNotifications = (notifications, filters) => {
+  const typeFilters = filters
+    .filter(({ type }) => type === 'type')
+    .map(({ value }) => notification => notification.subject.type === value);
+  const repositoryFilters = filters
+    .filter(({ type }) => type === 'repository')
+    .map(({ value }) => notification => notification.repository.name === value);
+  return notifications.filter(notification => {
+    const passesFilters = pathMatchFilters =>
+      !pathMatchFilters.length
+      || pathMatchFilters.some(filter => filter(notification));
+    return passesFilters(typeFilters) && passesFilters(repositoryFilters);
+  });
+};
+
 export default () => {
-  const { notifications } = useContext(Context);
+  const { filters, notifications } = useContext(Context);
+  const filteredNotifications = getFilteredNotifications(notifications, filters);
   return (
     <div style={styles.container}>
-      {notifications.map(notification => (
+      {filteredNotifications.map(notification => (
         <Notification
           key={notification.id}
           notification={notification}

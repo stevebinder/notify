@@ -7,7 +7,7 @@ export const Context = createContext();
 
 export const Provider = props => {
   const [state, setState] = useState({
-    filters: ['drive-web', 'iris', 'gaia'],
+    filters: [],
     notifications: [],
     token: '',
   });
@@ -24,6 +24,24 @@ export const Provider = props => {
       github.setToken(token);
       const notifications = await github.getNotifications();
       setState({ ...state, notifications, token });
+    },
+    setFilter: (type, value) => {
+      const isExactFilter = filter => filter.type === type && filter.value === value;
+      const containsExactFilter = state.filters.some(isExactFilter);
+      if (containsExactFilter) {
+        setState({
+          ...state,
+          filters: state.filters.filter(filter => !isExactFilter(filter)),
+        });
+      } else {
+        setState({
+          ...state,
+          filters: [
+            ...state.filters,
+            { type, value },
+          ],
+        });
+      }
     },
     syncStorage: async () => {
       const { notifications = [], token = '' } = await getLocalStorage();
