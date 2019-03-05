@@ -7,29 +7,37 @@ import {
 
 let checker = null;
 
-const onNotifications = notifications => {
-  setBadge(notifications.length);
-  setLocalStorage({ notifications });
+const onCheckerData = data => {
+  setLocalStorage({ notifications: data.all });
+  updateBadge(data.new.length);
 };
 
-const onStorage = ({ token }) => {
+const onStorage = changes => {
+  if (!changes.hasOwnProperty('token')) {
+    return;
+  }
+  const { token } = changes;
   if (token && !checker) {
-    checker = createChecker(token, onNotifications);
+    checker = createChecker(token, onCheckerData);
   } else if (!token && checker) {
     checker();
     checker = null;
   }
 };
 
-const setBadge = count => {
-  const color = inc ? '#ff0000' : '';
-  const current = +chrome.browserAction.getBadgeText() || 0;
-  const text = `${current + count}`;
-  chrome.browserAction.setBadgeText({ text });
-  chrome.browserAction.setBadgeBackgroundColor({ color });
-}
+const updateBadge = increase => chrome.browserAction.getBadgeText(
+  {},
+  label => {
+    const current = +label || 0;
+    const count = current + increase;
+    const text = count ? `${current + count}` : '';
+    chrome.browserAction.setBadgeText({ text });
+    chrome.browserAction.setBadgeBackgroundColor({ color: '#ff0000' });
+  },
+);
 
 (async () => {
+  chrome.browserAction.setBadgeText({ text: '' });
   const storage = await getLocalStorage();
   onStorage(storage);
   addLocalStorageListener(onStorage);

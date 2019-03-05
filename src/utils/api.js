@@ -9,7 +9,7 @@ const buildQuery = (query = {}) => Object.entries(query)
   )
   .join('&');
 
-const fetchData = async (path = '', params = {}) => {
+const fetchData = async (path = '', options = {}) => {
   if (!path) {
     throw new Error('invalid path');
   }
@@ -19,25 +19,79 @@ const fetchData = async (path = '', params = {}) => {
   const base = 'https://api.github.com';
   const query = {
     access_token: accessToken,
-    ...params,
+    ...options.query,
+    _r: Date.now(),
   };
+  const url = `${base}/${path}?${buildQuery(query)}`;
+  const response = await fetch(url, options);
+  if (!response.ok) {
+    throw new Error('bad response');
+  }
   try {
-    const response = await fetch(`${base}/${path}?${buildQuery(query)}`);
     const data = await response.json();
     return data;
   } catch (error) {
     try {
       const text = await response.text();
-      throw new Error(text);
-    } catch (error2) {
-      throw new Error('bad response');
+      return text;
+    } catch (error) {
+      return '';
     }
   }
 };
 
-const makeFetchData = path => (...args) => fetchData(path, ...args);
+const getNow = () => {
+  const zero = value => value < 10 ? `0${value}` : value;
+  const date = new Date();
+  const year = date.getUTCFullYear();
+  const month = zero(date.getUTCMonth() + 1);
+  const day = zero(date.getUTCDate())
+  const hour = zero(date.getUTCHours());
+  const minute = zero(date.getUTCMinutes());
+  const second = zero(date.getUTCSeconds());
+  return `${year}-${month}-${day}T${hour}:${minute}:${second}Z`;
+};
 
-export const getNotifications = makeFetchData('notifications');
+const makeFetchData = (path, options = {}) =>
+  (query = {}) =>
+    fetchData(
+      path,
+      {
+        ...options,
+        query: {
+          ...options.query,
+          ...query,
+        },
+      },
+    );
+
+const makeFetchDataCreator = (path, optionsCreator = () => ({})) =>
+  (query = {}) => {
+    const options = optionsCreator(query);
+    return fetchData(
+      path,
+      {
+        ...options,
+        query: {
+          ...options.query,
+          ...query,
+        },
+      },
+    );
+  };
+
+export const getNotifications = makeFetchData(
+  'notifications',
+  { query: { all: true } },
+);
+
+export const markNotificationsRead = makeFetchDataCreator(
+  'notifications',
+  () => ({
+    method: 'PUT',
+    query: { last_read_at: getNow(), id: '460661577' },
+  }),
+);
 
 export const setToken = token => {
   accessToken = token || '';

@@ -6,11 +6,13 @@ import { getLocalStorage } from 'src/utils/storage';
 export const Context = createContext();
 
 export const Provider = ({ children }) => {
+
   const [state, setState] = useState({
     filters: [],
     notifications: [],
     token: '',
   });
+
   const launchAuth = async () => {
     let token = '';
     try {
@@ -20,10 +22,14 @@ export const Provider = ({ children }) => {
       return;
     }
     chrome.storage.local.set({ token });
-    github.setToken(token);
-    const notifications = await github.getNotifications();
-    setState({ ...state, notifications, token });
+    setState({ ...state, token });
   };
+
+  const markNotificationsRead = () => {
+    github.setToken(state.token);
+    github.markNotificationsRead();
+  };
+
   const setFilter = (type, value) => {
     const isExactFilter = filter => filter.type === type && filter.value === value;
     const containsExactFilter = state.filters.some(isExactFilter);
@@ -42,29 +48,22 @@ export const Provider = ({ children }) => {
       });
     }
   };
+
   const syncStorage = async () => {
     const { notifications = [], token = '' } = await getLocalStorage();
-    if (token) {
-      github.setToken(token);
-      const newNotifications = await github.getNotifications();
-      setState({
-        ...state,
-        notifications: newNotifications,
-        token,
-      });
-    } else {
-      setState({
-        ...state,
-        notifications,
-        token,
-      });
-    }
+    setState({
+      ...state,
+      notifications,
+      token,
+    });
   };
+
   return (
     <Context.Provider
       value={{
         ...state,
         launchAuth,
+        markNotificationsRead,
         setFilter,
         syncStorage,
       }}

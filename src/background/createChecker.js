@@ -1,8 +1,8 @@
 import { getNotifications, setToken } from 'src/utils/api';
 
-const getSince = () => {
+const getTimeAgo = (ago = 0) => {
   const zero = num => num < 10 ? `0${num}` : num;
-  const date = new Date(Date.now() - (86400000 * 7));
+  const date = new Date(Date.now() - ago);
   const year = date.getFullYear();
   const month = zero(date.getMonth() + 1);
   const day = zero(date.getDate());
@@ -15,34 +15,35 @@ const getSince = () => {
 export default (token, callback) => {
 
   let interval = null;
-  let notifications = [];
+  let lastNotifications = [];
 
   const onInterval = async () => {
     setToken(token);
     const fetchedNotifications = await getNotifications({
-      all: false,
-      participating: false,
-      per_page: 10,
-      since: getSince(),
+      since: getTimeAgo(86400000),
     });
-    const oldNotifications = [...notifications];
-    notifications = fetchedNotifications;
-    if (oldNotifications.length) {
-      const [{ id: firstId }] = oldNotifications;
-      const newNotifications = [];
-      for (let i = 0; i < fetchedNotifications.length; i += 1) {
-        if (fetchedNotifications[i].id === firstId) {
-          break;
-        }
-        newNotifications.push(fetchedNotifications[i]);
-      }
-      if (newNotifications.length) {
-        callback(newNotifications);
-      }
-    }
+    const oldNotifications = [...lastNotifications];
+    lastNotifications = fetchedNotifications;
+    const firstOldId = oldNotifications.length ? oldNotifications[0].id : '';
+    const lastIdIndex = fetchedNotifications
+      .findIndex(({ id }) => id === firstOldId);
+    const newNotifications = lastIdIndex === -1
+      ? fetchedNotifications
+      : fetchedNotifications.slice(0, lastIdIndex);
+    const newUnreadNotifications = newNotifications
+      .filter(({ unread }) => unread);
+    callback({
+      all: fetchedNotifications,
+      new: newUnreadNotifications,
+    });
   };
 
-  interval = setInterval(onInterval, 15000);
+  // Github returns an "X-Poll-Interval" header that is set to the
+  // max number of seconds you should wait before polling again.
+  // Usually this value is 60, hardcoding it for now.
+  // TODO: Use the value returned from the header to update the timeout
+  // on each request.
+  interval = setInterval(onInterval, 60000);
   onInterval();
 
   return () => {
