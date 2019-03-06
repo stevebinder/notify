@@ -77,6 +77,11 @@ const isSelected = (filters, type, value) => filters.some(filter =>
 export default () => {
   const { filters, notifications, setFilter } = useContext(Context);
   const details = getDetails(notifications);
+  const makeOnClick = (type, value) => event => setFilter(
+    type,
+    value,
+    !!(event.altKey || event.ctrlKey || event.metaKey || event.shiftKey),
+  );
   return (
     <div style={styles.container}>
       {details.map(({ label, type, values }, index) => (
@@ -86,7 +91,7 @@ export default () => {
             {values.map(value => (
               <div
                 key={value}
-                onClick={() => setFilter(type, value)}
+                onClick={makeOnClick(type, value)}
                 style={styles.option(isSelected(filters, type, value))}
               >
                 {value}

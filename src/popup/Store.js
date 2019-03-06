@@ -30,19 +30,30 @@ export const Provider = ({ children }) => {
     github.markNotificationsRead();
   };
 
-  const setFilter = (type, value) => {
-    const isExactFilter = filter => filter.type === type && filter.value === value;
+  const setFilter = (type, value, additiveMode = false) => {
+    const isExactFilter = filter =>
+      filter.type === type && filter.value === value;
     const containsExactFilter = state.filters.some(isExactFilter);
+    const withoutExactFilter = state.filters.filter(filter =>
+      !isExactFilter(filter));
     if (containsExactFilter) {
       setState({
         ...state,
-        filters: state.filters.filter(filter => !isExactFilter(filter)),
+        filters: withoutExactFilter,
+      });
+    } else if (additiveMode) {
+      setState({
+        ...state,
+        filters: [
+          ...withoutExactFilter,
+          { type, value },
+        ],
       });
     } else {
       setState({
         ...state,
         filters: [
-          ...state.filters,
+          ...withoutExactFilter.filter(filter => filter.type !== type),
           { type, value },
         ],
       });

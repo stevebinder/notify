@@ -1,16 +1,10 @@
-export const addLocalStorageListener = callback => chrome.storage.onChanged
-  .addListener((details, area) => {
+export const addLocalStorageListener = callback =>
+  chrome.storage.onChanged.addListener(async (details, area) => {
     if (area !== 'local') {
       return;
     }
-    const changes = Object.entries(details).reduce(
-      (result, [key, { newValue }]) => ({
-        ...result,
-        [key]: newValue,
-      }),
-      {},
-    );
-    callback(changes);
+    const storage = await getLocalStorage();
+    callback(storage);
   });
 
 export const getLocalStorage = () => new Promise(resolve =>

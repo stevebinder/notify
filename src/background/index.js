@@ -12,11 +12,7 @@ const onCheckerData = data => {
   updateBadge(data.new.length);
 };
 
-const onStorage = changes => {
-  if (!changes.hasOwnProperty('token')) {
-    return;
-  }
-  const { token } = changes;
+const onStorage = ({ token }) => {
   if (token && !checker) {
     checker = createChecker(token, onCheckerData);
   } else if (!token && checker) {
@@ -29,7 +25,7 @@ const updateBadge = increase => chrome.browserAction.getBadgeText(
   {},
   label => {
     const current = +label || 0;
-    const count = current + increase;
+    const count = Math.min(99, current + increase);
     const text = count ? `${current + count}` : '';
     chrome.browserAction.setBadgeText({ text });
     chrome.browserAction.setBadgeBackgroundColor({ color: '#ff0000' });
