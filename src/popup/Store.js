@@ -1,19 +1,19 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, Component } from 'react';
 import * as github from 'src/utils/api';
 import launchGithubAuthFlow from 'src/utils/auth';
 import { getLocalStorage } from 'src/utils/storage';
 
 export const Context = createContext();
 
-export const Provider = ({ children }) => {
+export class Provider extends Component {
 
-  const [state, setState] = useState({
+  state = {
     filters: [],
     notifications: [],
     token: '',
-  });
+  }
 
-  const launchAuth = async () => {
+  launchAuth = async () => {
     let token = '';
     try {
       token = await launchGithubAuthFlow();
@@ -22,64 +22,57 @@ export const Provider = ({ children }) => {
       return;
     }
     chrome.storage.local.set({ token });
-    setState({ ...state, token });
-  };
+    this.setState({ token });
+  }
 
-  const markNotificationsRead = () => {
-    github.setToken(state.token);
+  markNotificationsRead = () => {
+    github.setToken(this.state.token);
     github.markNotificationsRead();
-  };
+  }
 
-  const setFilter = (type, value, additiveMode = false) => {
+  setFilter = (type, value, additiveMode = false) => {
     const isExactFilter = filter =>
       filter.type === type && filter.value === value;
-    const containsExactFilter = state.filters.some(isExactFilter);
-    const withoutExactFilter = state.filters.filter(filter =>
+    const containsExactFilter = this.state.filters.some(isExactFilter);
+    const withoutExactFilter = this.state.filters.filter(filter =>
       !isExactFilter(filter));
     if (containsExactFilter) {
-      setState({
-        ...state,
+      this.setState({
         filters: withoutExactFilter,
       });
     } else if (additiveMode) {
-      setState({
-        ...state,
+      this.setState({
         filters: [
           ...withoutExactFilter,
           { type, value },
         ],
       });
     } else {
-      setState({
-        ...state,
+      this.setState({
         filters: [
           ...withoutExactFilter.filter(filter => filter.type !== type),
           { type, value },
         ],
       });
     }
-  };
+  }
 
-  const syncStorage = async () => {
+  syncStorage = async () => {
     const { notifications = [], token = '' } = await getLocalStorage();
-    setState({
-      ...state,
-      notifications,
-      token,
-    });
-  };
+    this.setState({ notifications, token });
+  }
 
-  return (
+  render = () => (
     <Context.Provider
       value={{
-        ...state,
-        launchAuth,
-        markNotificationsRead,
-        setFilter,
-        syncStorage,
+        ...this.state,
+        launchAuth: this.launchAuth,
+        markNotificationsRead: this.markNotificationsRead,
+        setFilter: this.setFilter,
+        syncStorage: this.syncStorage,
       }}
     >
-      {children}
+      {this.props.children}
     </Context.Provider>
-  );
-};
+  )
+}
