@@ -1,5 +1,4 @@
-import React, { useContext } from 'react';
-import { useOnMount } from 'src/popup/effects';
+import React, { Component } from 'react';
 import { Context } from 'src/popup/Store';
 import Feed from './Feed';
 import Filters from './Filters';
@@ -12,13 +11,20 @@ const styles = {
   },
 };
 
-export default () => {
-  const { markNotificationsRead } = useContext(Context);
-  useOnMount(markNotificationsRead);
-  return (
-    <div style={styles.layout}>
-      <Filters />
-      <Feed />
-    </div>
-  );
-};
+export default class extends Component {
+
+  static contextType = Context;
+
+  componentDidMount() {
+    this.context.markAllRead();
+  }
+
+  render() {
+    return (
+      <div style={styles.layout}>
+        <Filters />
+        <Feed />
+      </div>
+    );
+  }
+}

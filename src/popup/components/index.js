@@ -1,5 +1,4 @@
-import React, { useContext } from 'react';
-import { useOnMount } from '../effects';
+import React, { Component } from 'react';
 import { Context } from 'src/popup/Store';
 import Base from './Base';
 import Welcome from './Welcome';
@@ -12,12 +11,19 @@ const style = {
   top: 0,
 };
 
-export default () => {
-  const { launchAuth, notifications, syncStorage, token } = useContext(Context);
-  useOnMount(syncStorage);
-  return (
-    <div style={style}>
-      {token ? <Base /> : <Welcome />}
-    </div>
-  );
-};
+export default class extends Component {
+
+  static contextType = Context;
+
+  componentDidMount() {
+    this.context.syncStorage();
+  }
+
+  render() {
+    return (
+      <div style={style}>
+        {this.context.token ? <Base /> : <Welcome />}
+      </div>
+    );
+  }
+}
