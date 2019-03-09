@@ -11,6 +11,7 @@ export class Provider extends Component {
 
     filters: [],
     notifications: [],
+    syncing: true,
     token: '',
 
     launchAuth: async () => {
@@ -40,8 +41,15 @@ export class Provider extends Component {
     },
 
     syncStorage: async () => {
+      this.setState({
+        syncing: true,
+      });
       const { notifications = [], token = '' } = await getLocalStorage();
-      this.setState({ notifications, token });
+      this.setState({
+        notifications,
+        syncing: false,
+        token,
+      });
     },
   };
 

@@ -1,17 +1,5 @@
 import { getNotifications } from 'src/utils/api';
 
-const getTimeAgo = (ago = 0) => {
-  const zero = num => num < 10 ? `0${num}` : num;
-  const date = new Date(Date.now() - ago);
-  const year = date.getFullYear();
-  const month = zero(date.getMonth() + 1);
-  const day = zero(date.getDate());
-  const hours = zero(date.getHours());
-  const minutes = zero(date.getMinutes());
-  const seconds = zero(date.getSeconds());
-  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}Z`;
-};
-
 export default (token, callback) => {
 
   let interval = null;
@@ -19,8 +7,8 @@ export default (token, callback) => {
 
   const onInterval = async () => {
     const fetchedNotifications = await getNotifications({
+      all: true,
       access_token: token,
-      since: getTimeAgo(86400000),
     });
     const oldNotifications = [...lastNotifications];
     lastNotifications = fetchedNotifications;

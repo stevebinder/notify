@@ -19,7 +19,9 @@ export default class extends Component {
   render() {
     return (
       <div style={style}>
-        {this.context.token ? <Base /> : <Welcome />}
+        {this.context.syncing ? null
+          : this.context.token ? <Base />
+          : <Welcome />}
       </div>
     );
   }

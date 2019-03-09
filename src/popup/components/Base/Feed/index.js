@@ -10,6 +10,7 @@ const styles = {
     height: '100%',
     overflow: 'auto',
     padding: '10px',
+    paddingBottom: '100px',
   },
 };
 
