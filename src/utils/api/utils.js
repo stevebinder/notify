@@ -1,6 +1,4 @@
-let accessToken = '';
-
-const buildQuery = (query = {}) => Object.entries(query)
+export const buildQuery = (query = {}) => Object.entries(query)
   .filter(([key, value]) => value !== undefined)
   .map(([key, value]) => ([key, encodeURIComponent(value)]))
   .reduce(
@@ -9,16 +7,12 @@ const buildQuery = (query = {}) => Object.entries(query)
   )
   .join('&');
 
-const fetchData = async (path = '', options = {}) => {
+export const fetchData = async (path = '', options = {}) => {
   if (!path) {
     throw new Error('invalid path');
   }
-  if (!accessToken) {
-    throw new Error('missing access token');
-  }
   const base = 'https://api.github.com';
   const query = {
-    access_token: accessToken,
     ...options.query,
     _r: Date.now(),
   };
@@ -40,7 +34,7 @@ const fetchData = async (path = '', options = {}) => {
   }
 };
 
-const getNow = () => {
+export const getNow = () => {
   const zero = value => value < 10 ? `0${value}` : value;
   const date = new Date();
   const year = date.getUTCFullYear();
@@ -52,22 +46,9 @@ const getNow = () => {
   return `${year}-${month}-${day}T${hour}:${minute}:${second}Z`;
 };
 
-const makeFetchData = (path, options = {}) =>
-  (query = {}) =>
-    fetchData(
-      path,
-      {
-        ...options,
-        query: {
-          ...options.query,
-          ...query,
-        },
-      },
-    );
-
-const makeFetchDataCreator = (path, optionsCreator = () => ({})) =>
-  (query = {}) => {
-    const options = optionsCreator(query);
+export const makeFetchData = (path, optionsOrOptionsCreator) => (query = {}) => {
+  if (typeof optionsOrOptionsCreator === 'function') {
+    const options = optionsOrOptionsCreator(query);
     return fetchData(
       path,
       {
@@ -78,21 +59,16 @@ const makeFetchDataCreator = (path, optionsCreator = () => ({})) =>
         },
       },
     );
-  };
-
-export const getNotifications = makeFetchData(
-  'notifications',
-  { query: { all: true } },
-);
-
-export const markNotificationsRead = makeFetchDataCreator(
-  'notifications',
-  () => ({
-    method: 'PUT',
-    query: { last_read_at: getNow(), id: '460661577' },
-  }),
-);
-
-export const setToken = token => {
-  accessToken = token || '';
+  }
+  const options = optionsOrOptionsCreator;
+  return fetchData(
+    path,
+    {
+      ...options,
+      query: {
+        ...options.query,
+        ...query,
+      },
+    },
+  );
 };

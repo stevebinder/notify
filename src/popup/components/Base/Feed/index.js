@@ -4,11 +4,12 @@ import Notification from './Notification';
 
 const styles = {
   container: {
+    backgroundColor: '#fdfdfd',
     boxSizing: 'border-box',
     flex: '1',
     height: '100%',
     overflow: 'auto',
-    padding: '30px',
+    padding: '10px',
   },
 };
 
@@ -32,10 +33,11 @@ export default () => {
   const filteredNotifications = getFilteredNotifications(notifications, filters);
   return (
     <div style={styles.container}>
-      {filteredNotifications.map(notification => (
+      {filteredNotifications.map((notification, index) => (
         <Notification
           key={notification.id}
           notification={notification}
+          space={!!index}
         />
       ))}
     </div>

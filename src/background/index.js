@@ -24,11 +24,10 @@ const onStorage = ({ token }) => {
 const updateBadge = increase => chrome.browserAction.getBadgeText(
   {},
   label => {
-    const current = +label || 0;
-    const count = Math.min(99, current + increase);
-    const text = count ? `${current + count}` : '';
+    const count = Math.min(99, (+label || 0) + increase);
+    const text = count ? `${count}` : '';
     chrome.browserAction.setBadgeText({ text });
-    chrome.browserAction.setBadgeBackgroundColor({ color: '#ff0000' });
+    chrome.browserAction.setBadgeBackgroundColor({ color: '#2e8bf7' });
   },
 );
 

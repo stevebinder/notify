@@ -1,4 +1,4 @@
-import { getNotifications, setToken } from 'src/utils/api';
+import { getNotifications } from 'src/utils/api';
 
 const getTimeAgo = (ago = 0) => {
   const zero = num => num < 10 ? `0${num}` : num;
@@ -18,8 +18,8 @@ export default (token, callback) => {
   let lastNotifications = [];
 
   const onInterval = async () => {
-    setToken(token);
     const fetchedNotifications = await getNotifications({
+      access_token: token,
       since: getTimeAgo(86400000),
     });
     const oldNotifications = [...lastNotifications];
