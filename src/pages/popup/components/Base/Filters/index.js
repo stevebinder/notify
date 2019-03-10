@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
-import { Context } from 'src/popup/Store';
-import { WithHover } from 'src/popup/hocs';
+import { WithHover } from 'src/hocs';
+import { Context } from '../../../Store';
 import styles from './styles';
 import { getDetails, getLabelForValue, isSelected } from './utils';
 

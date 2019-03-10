@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import { Context } from 'src/popup/Store';
+import { Context } from '../Store';
 import Base from './Base';
 import Welcome from './Welcome';
 
 const style = {
+  boxSizing: 'border-box',
+  borderLeft: '2px solid #fff',
+  borderRight: '2px solid #fff',
   height: '100%',
   width: '100%',
 };

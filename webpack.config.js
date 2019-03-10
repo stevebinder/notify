@@ -6,8 +6,8 @@ module.exports = {
     ? 'cheap-module-source-map'
     : 'none',
   entry: {
-    background: `${__dirname}/src/background/index.js`,
-    popup: `${__dirname}/src/popup/index.js`,
+    background: `${__dirname}/src/pages/background/index.js`,
+    popup: `${__dirname}/src/pages/popup/index.js`,
   },
   mode: process.env.NODE_ENV === 'development'
     ? 'development'

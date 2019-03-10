@@ -3,7 +3,7 @@ import {
   addLocalStorageListener,
   getLocalStorage,
   setLocalStorage
-} from 'src/utils/storage';
+} from 'src/utils';
 
 let checker = null;
 

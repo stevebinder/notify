@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { WithHover } from 'src/popup/hocs';
+import { WithHover } from 'src/hocs';
 import styles from './styles';
 import { getColor, getIsNew, getTime, getUrl } from './utils';
 

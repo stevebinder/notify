@@ -37,8 +37,8 @@ export const getDetails = notifications => {
 };
 
 export const getLabelForValue = value => {
-  const defs = {
-
+  if (value === 'PullRequest') {
+    return 'Pull Request';
   }
   return value;
 };

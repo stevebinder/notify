@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
-import { Context } from 'src/popup/Store';
-import { WithHover } from 'src/popup/hocs';
+import { Context } from '../Store';
+import { WithHover } from 'src/hocs';
 
 const styles = {
   button: hovered => ({
-    background: hovered ? '#2768ef' : '#3b76f1',
+    background: hovered ? '#3b76f1' : '#2768ef',
     border: 'none',
     borderRadius: '4px',
     boxShadow: '#a9a9a9 0px 0px 9px',
@@ -19,7 +19,6 @@ const styles = {
   }),
   container: {
     alignItems: 'center',
-    background: '#e9e9e9',
     display: 'flex',
     height: '100%',
     justifyContent: 'center',
@@ -37,15 +36,10 @@ const styles = {
   },
   layout: {
     alignItems: 'center',
-    background: '#fff',
-    borderRadius: '9999px',
-    boxShadow: '0 0 22px #c5c5c5',
     display: 'flex',
     flexDirection: 'column',
-    height: '250px',
     justifyContent: 'center',
     padding: '50px',
-    width: '250px',
   },
   logo: {
     fill: '#24292e',
@@ -88,7 +82,7 @@ export default () => {
         <WithHover>
         {hovered => (
           <button onClick={launchAuth} style={styles.button(hovered)}>
-            Launch GitHub Authorization
+            Connect GitHub
           </button>
         )}
         </WithHover>

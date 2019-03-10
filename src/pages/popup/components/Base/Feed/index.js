@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Context } from 'src/popup/Store';
+import { Context } from '../../../Store';
 import Notification from './Notification';
 
 const styles = {

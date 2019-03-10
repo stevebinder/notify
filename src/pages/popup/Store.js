@@ -1,7 +1,6 @@
 import React, { Component, createContext } from 'react';
-import { markNotificationsRead } from 'src/utils/api';
-import launchGithubAuthFlow from 'src/utils/auth';
-import { getLocalStorage } from 'src/utils/storage';
+import { launchAuthFlow, markNotificationsRead } from 'src/api';
+import { getLocalStorage } from 'src/utils';
 
 export const Context = createContext();
 
@@ -17,13 +16,17 @@ export class Provider extends Component {
     launchAuth: async () => {
       let token = '';
       try {
-        token = await launchGithubAuthFlow();
+        token = await launchAuthFlow();
       } catch (e) {}
       if (!token) {
         return;
       }
       chrome.storage.local.set({ token });
-      this.setState({ token });
+      // TODO: add logic to listen for the background script to fetch
+      // the first round of notifications so the screen isn't blank
+      // and we don't have to do window.close here for a better
+      // user experience.
+      window.close();
     },
 
     markAllRead: () => {

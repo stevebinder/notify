@@ -7,16 +7,16 @@
   "browser_action": {
     "default_popup": "popup.html"
   },
-  "description": "",
+  "description": "Get GitHub notifications right in your browser bar.",
   "icons": {
     "128": "icon.png"
   },
   "manifest_version": 2,
-  "name": "Github Notify",
+  "name": "Notify for GitHub",
   "permissions": [
     "https://github.com/",
     "identity",
     "storage"
   ],
-  "version": "0.0.1"
+  "version": "0.0.2"
 }

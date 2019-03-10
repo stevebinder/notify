@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Context } from 'src/popup/Store';
+import { Context } from '../../Store';
 import Feed from './Feed';
 import Filters from './Filters';
 

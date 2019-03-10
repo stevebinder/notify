@@ -1,4 +1,4 @@
-import { getNotifications } from 'src/utils/api';
+import { getNotifications } from 'src/api';
 
 export default (token, onSuccess, onError) => {
 
