@@ -19,7 +19,9 @@ export const fetchData = async (path = '', options = {}) => {
   const url = `${base}/${path}?${buildQuery(query)}`;
   const response = await fetch(url, options);
   if (!response.ok) {
-    throw new Error('bad response');
+    const error = new Error('bad response');
+    error.status = response.status;
+    throw error;
   }
   try {
     const data = await response.json();

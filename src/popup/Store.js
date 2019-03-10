@@ -30,14 +30,28 @@ export class Provider extends Component {
       markNotificationsRead({ access_token: this.state.token });
     },
 
-    setFilter: (type, value) => {
+    setFilter: (type, value, additive = false) => {
       const isExactFilter = filter =>
         filter.type === type && filter.value === value;
-      const containsExactFilter = this.state.filters.some(isExactFilter);
-      const filters = containsExactFilter
-        ? this.state.filters.filter(filter => !isExactFilter(filter))
-        : [...this.state.filters, { type, value }];
-      this.setState({ filters });
+      if (this.state.filters.some(isExactFilter)) {
+        this.setState({
+          filters: this.state.filters.filter(filter => !isExactFilter(filter)),
+        });
+      } else if (additive) {
+        this.setState({
+          filters: [
+            ...this.state.filters,
+            { type, value },
+          ],
+        });
+      } else {
+        this.setState({
+          filters: [
+            ...this.state.filters.filter(filter => filter.type !== type),
+            { type, value },
+          ],
+        });
+      }
     },
 
     syncStorage: async () => {

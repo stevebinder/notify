@@ -6,10 +6,21 @@ export default (token, callback) => {
   let lastNotifications = [];
 
   const onInterval = async () => {
-    const fetchedNotifications = await getNotifications({
-      all: true,
-      access_token: token,
-    });
+    let fetchedNotifications = [];
+    try {
+      fetchedNotifications = await getNotifications({
+        all: true,
+        access_token: token,
+      });
+    } catch (error) {
+      if (error.status === 401) {
+        chrome.storage.local.set({ token: '' });
+      }
+      return ({
+        all: [],
+        new: [],
+      });
+    }
     const oldNotifications = [...lastNotifications];
     lastNotifications = fetchedNotifications;
     const firstOldId = oldNotifications.length ? oldNotifications[0].id : '';

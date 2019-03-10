@@ -10,7 +10,7 @@ const styles = {
     height: '100%',
     overflow: 'auto',
     padding: '10px',
-    paddingBottom: '100px',
+    paddingBottom: '50px',
   },
 };
 
@@ -21,12 +21,14 @@ const getFilteredNotifications = (notifications, filters) => {
   const repositoryFilters = filters
     .filter(({ type }) => type === 'repository')
     .map(({ value }) => notification => notification.repository.name === value);
-  return notifications.filter(notification => {
-    const passesFilters = pathMatchFilters =>
-      !pathMatchFilters.length
-      || pathMatchFilters.some(filter => filter(notification));
-    return passesFilters(typeFilters) && passesFilters(repositoryFilters);
-  });
+  return notifications
+    .slice(0, 50)
+    .filter(notification => {
+      const passesFilters = pathMatchFilters =>
+        !pathMatchFilters.length
+        || pathMatchFilters.some(filter => filter(notification));
+      return passesFilters(typeFilters) && passesFilters(repositoryFilters);
+    });
 };
 
 export default () => {
