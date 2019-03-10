@@ -1,10 +1,9 @@
-const clientId = '68a04e29e68d3ceffe16';
-const clientSecret = '05a5b55a3b4df855cbcce77d3022d54a99099629';
+import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from 'src/config';
 
 const exchangeCodeForToken = async code => {
   const base = 'https://github.com/login/oauth/access_token';
   const redirect = chrome.identity.getRedirectURL();
-  const url = `${base}?code=${code}&client_id=${clientId}&client_secret=${clientSecret}&redirect_url=${redirect}`;
+  const url = `${base}?code=${code}&client_id=${GITHUB_CLIENT_ID}&client_secret=${GITHUB_CLIENT_SECRET}&redirect_url=${redirect}`;
   const options = { method: 'POST' };
   try {
     const response = await fetch(url, options);
@@ -34,7 +33,7 @@ const extractParam = (data, param) => {
 const getAuthResponse = () => new Promise((resolve, reject) => {
   const redirect = chrome.identity.getRedirectURL();
   const base = 'https://github.com/login/oauth/authorize';
-  const authUrl = `${base}?client_id=${clientId}&scope=notifications&redirect_uri=${redirect}`;
+  const authUrl = `${base}?client_id=${GITHUB_CLIENT_ID}&scope=notifications&redirect_uri=${redirect}`;
   const options = { interactive: true, url: authUrl };
   const onResponse = responseUrl => {
     if (responseUrl) {
