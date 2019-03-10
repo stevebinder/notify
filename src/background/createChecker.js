@@ -1,40 +1,36 @@
 import { getNotifications } from 'src/utils/api';
 
-export default (token, callback) => {
+export default (token, onSuccess, onError) => {
 
   let interval = null;
   let lastNotifications = [];
 
   const onInterval = async () => {
-    let fetchedNotifications = [];
     try {
-      fetchedNotifications = await getNotifications({
+      const fetchedNotifications = await getNotifications({
         all: true,
         access_token: token,
       });
+      const oldNotifications = [...lastNotifications];
+      lastNotifications = fetchedNotifications;
+      const firstOldId = oldNotifications.length ? oldNotifications[0].id : '';
+      const lastIdIndex = fetchedNotifications
+        .findIndex(({ id }) => id === firstOldId);
+      const newNotifications = lastIdIndex === -1
+        ? fetchedNotifications
+        : fetchedNotifications.slice(0, lastIdIndex);
+      const newUnreadNotifications = newNotifications
+        .filter(({ unread }) => unread);
+      onSuccess({
+        all: fetchedNotifications,
+        new: newUnreadNotifications,
+      });
     } catch (error) {
       if (error.status === 401) {
-        chrome.storage.local.set({ token: '' });
+        onError(error);
       }
-      return ({
-        all: [],
-        new: [],
-      });
+      throw error;
     }
-    const oldNotifications = [...lastNotifications];
-    lastNotifications = fetchedNotifications;
-    const firstOldId = oldNotifications.length ? oldNotifications[0].id : '';
-    const lastIdIndex = fetchedNotifications
-      .findIndex(({ id }) => id === firstOldId);
-    const newNotifications = lastIdIndex === -1
-      ? fetchedNotifications
-      : fetchedNotifications.slice(0, lastIdIndex);
-    const newUnreadNotifications = newNotifications
-      .filter(({ unread }) => unread);
-    callback({
-      all: fetchedNotifications,
-      new: newUnreadNotifications,
-    });
   };
 
   // Github returns an "X-Poll-Interval" header that is set to the

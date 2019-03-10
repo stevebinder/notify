@@ -7,14 +7,20 @@ import {
 
 let checker = null;
 
-const onCheckerData = data => {
+const onCheckerError = () => {
+  chrome.storage.local.set({ token: '' });
+  checker();
+  checker = null;
+};
+
+const onCheckerSuccess = data => {
   setLocalStorage({ notifications: data.all });
   updateBadge(data.new.length);
 };
 
 const onStorage = ({ token }) => {
   if (token && !checker) {
-    checker = createChecker(token, onCheckerData);
+    checker = createChecker(token, onCheckerSuccess, onCheckerError);
   } else if (!token && checker) {
     checker();
     checker = null;
