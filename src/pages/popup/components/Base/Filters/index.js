@@ -1,11 +1,12 @@
-import React, { useContext } from 'react';
+import React, { memo, useContext } from 'react';
 import { WithHover } from 'src/hocs';
 import { Context } from '../../../Store';
 import styles from './styles';
 import { getDetails, getLabelForValue, isSelected } from './utils';
 
-export default () => {
-  const { filters, notifications, setFilter } = useContext(Context);
+// We create the Component here, and make sure to make it a "memoized" component
+// or a PureComponent in order to only rerender when props change.
+const Component = memo(({ filters, notifications, setFilter }) => {
   const details = getDetails(notifications);
   const makeOnClick = (type, value) => event => setFilter(
     type,
@@ -35,4 +36,13 @@ export default () => {
       ))}
     </div>
   );
+});
+
+// We create a "container" or "hoc" here to pass down only the
+// data we want from the context. This way, if some other property changes
+// on this context the Component won't know about it, and it won't rerender.
+export default props => {
+  const { filters, notifications, setFilter } = useContext(Context);
+  const data = { filters, notifications, setFilter };
+  return <Component {...data} {...props} />;
 };
